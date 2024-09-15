@@ -154,7 +154,10 @@ app.get("/auth/google/callback", passport.authenticate("google", {
   failureRedirect: `${BASE_URL}/notfound`
 }));
 
-
+app.get('/',(req,res)=>{
+  res.send('backend running');
+  
+});
 
 app.post('/register', async (req, res) => {
   try {
