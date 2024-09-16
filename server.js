@@ -17,7 +17,11 @@ require("./db/conn"); // Ensure this points to the correct path of your connecti
 const BASE_URL=process.env.BASE_URL
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "https://192.168.80.227:3000",
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true
+}));
 app.use(express.json());
 
 
