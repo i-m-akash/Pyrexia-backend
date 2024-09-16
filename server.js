@@ -96,11 +96,11 @@ const PORT = process.env.PORT || 6005 ;
 const clientid = process.env.CLIENT_ID ;
 const clientsecret =process.env.CLIENT_SECRET;
 
-app.use(cors({
-  origin: `${BASE_URL}`,
-  methods: "GET,POST,PUT,DELETE",
-  credentials: true
-}));
+// app.use(cors({
+//   origin: `${BASE_URL}`,
+//   methods: "GET,POST,PUT,DELETE",
+//   credentials: true
+// }));
 app.use(express.json());
 
 
