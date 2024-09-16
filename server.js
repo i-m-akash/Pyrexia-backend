@@ -18,7 +18,7 @@ const BASE_URL=process.env.BASE_URL
 const app = express();
 
 app.use(cors({
-  origin: "https://192.168.80.227:3000",
+  origin: "http://127.0.0.1:3000",
   methods: "GET,POST,PUT,DELETE",
   credentials: true
 }));
