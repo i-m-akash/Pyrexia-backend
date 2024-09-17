@@ -18,7 +18,7 @@ const BASE_URL=process.env.BASE_URL
 const app = express();
 
 app.use(cors({
-  origin: "${BASE_URL}",
+  origin: BASE_URL,
   methods: "GET,POST,PUT,DELETE",
    allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -72,7 +72,7 @@ const paymentVerification = async (req, res) => {
     });
 
     res.redirect(
-      `${BASE_URL}/paymentsuccess?reference=${razorpay_payment_id}`
+      BASE_URL +'/paymentsuccess?reference=${razorpay_payment_id}'
     );
   } else {
     res.status(400).json({
@@ -155,8 +155,8 @@ passport.deserializeUser((user, done) => {
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 app.get("/auth/google/callback", passport.authenticate("google", {
-  successRedirect: `${BASE_URL}/`,
-  failureRedirect: `${BASE_URL}/notfound`
+  successRedirect: BASE_URL + '/',
+  failureRedirect: BASE_URL + '/notfound'
 }));
 
 app.get('/',(req,res)=>{
@@ -191,7 +191,7 @@ app.post('/register', async (req, res) => {
     verifyTokens[email] = { token: verifyToken, expiry: Date.now() + 15 * 60 * 1000 }; // Token expires in 15 minutes
 
     // Create the verification URL
-    const verifyUrl = `${BASE_URL}/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}`;
+    const verifyUrl = BASE_URL + '/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}';
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = email;
@@ -254,7 +254,7 @@ app.post('/forgotpassword', async (req, res) => {
   const resetToken = crypto.randomBytes(32).toString('hex');
   resetTokens[email] = { token: resetToken, expiry: Date.now() + 15 * 60 * 1000 }; // Token expires in 15 minutes
 
-  const resetUrl =` ${BASE_URL}/resetpassword?token=${resetToken}&email=${encodeURIComponent(email)}`;
+  const resetUrl =BASE_URL + '/resetpassword?token=${resetToken}&email=${encodeURIComponent(email)}';
   try {
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
@@ -324,7 +324,7 @@ app.post('/login', async (req, res) => {
       verifyTokens[email] = { token: verifyToken, expiry: Date.now() + 15 * 60 * 1000 }; // Token expires in 15 minutes
 
       // Create the verification URL
-      const verifyUrl = `${BASE_URL}/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}`;
+      const verifyUrl = BASE_URL + '/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}';
       const send_to = email;
       const sent_from = process.env.EMAIL_USER;
       const reply_to = email;
