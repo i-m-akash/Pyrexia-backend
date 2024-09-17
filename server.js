@@ -18,7 +18,7 @@ const BASE_URL=process.env.BASE_URL
 const app = express();
 
 app.use(cors({
-  origin: "https://pyrexia-v4v8.vercel.app/",
+  origin: "${BASE_URL}",
   methods: "GET,POST,PUT,DELETE",
   credentials: true
 }));
