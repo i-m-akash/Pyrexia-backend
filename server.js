@@ -106,7 +106,7 @@ const clientsecret =process.env.CLIENT_SECRET;
 //   methods: "GET,POST,PUT,DELETE",
 //   credentials: true
 // }));
-app.use(express.json());
+// app.use(express.json());
 
 
 
