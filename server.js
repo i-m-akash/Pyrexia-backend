@@ -324,7 +324,7 @@ app.post('/login', async (req, res) => {
       verifyTokens[email] = { token: verifyToken, expiry: Date.now() + 15 * 60 * 1000 }; // Token expires in 15 minutes
 
       // Create the verification URL
-      const verifyUrl = BASE_URL + '/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}';
+      const verifyUrl = `${BASE_URL}/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}`;
       const send_to = email;
       const sent_from = process.env.EMAIL_USER;
       const reply_to = email;
