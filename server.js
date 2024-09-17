@@ -339,6 +339,7 @@ app.post('/login', async (req, res) => {
         await sendEmail(subject, message, send_to, sent_from, reply_to);
         return res.status(200).json({ success: false , message: "Please verify your email to login. Verification link is send to your email." });
       } catch (error) {
+        console.error("Error sending verification email:", error);
         return res.status(500).json({ error: "Failed to send verification email. Please try again later." });
       }
     }
