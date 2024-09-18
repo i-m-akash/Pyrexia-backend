@@ -5,7 +5,7 @@ const passport = require("passport");
 const bcrypt = require( "bcryptjs");
 const User = require("./model/userSchema");
 const EventRegistration = require( "./model/registrationSchema");
-const sendEmail = require("./utils/sendEmail"); // Fixed the spacing
+const sendEmail = require("./utils/sendEmail"); 
 const crypto = require( 'crypto');
 const OAuth2Strategy = require("passport-google-oauth2").Strategy; 
 const express = require( "express");
@@ -353,7 +353,7 @@ app.post('/login', async (req, res) => {
         console.error("Login error:", err);
         return res.status(500).json({ error: "Login failed" });
       }
-      //req.session.user = user; // Store user in session
+      req.session.user = user; // Store user in session
       
       res.status(200).json({ success: true, message: "User logged in successfully" });
     });
