@@ -7,12 +7,10 @@ const User = require("./model/userSchema");
 const EventRegistration = require( "./model/registrationSchema");
 const sendEmail = require("./utils/sendEmail"); // Fixed the spacing
 const crypto = require( 'crypto');
-const OAuth2Strategy = require("passport-google-oauth2").Strategy; // Using ES6 import style for the OAuth2 strategy
+const OAuth2Strategy = require("passport-google-oauth2").Strategy; 
 const express = require( "express");
 const Razorpay = require("razorpay");
-require("./db/conn"); // Ensure this points to the correct path of your connection file
-
-
+require("./db/conn"); 
 
 const BASE_URL=process.env.BASE_URL
 const app = express();
@@ -24,11 +22,21 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-
-
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret:process.env.SECRET ,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+  secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
+  httpOnly: true,
+  sameSite: 'lax',
+     maxAge: 1000 * 60 * 60 * 24, // 1 day
+}
+}));
 
-
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Payment code start
 
@@ -72,7 +80,7 @@ const paymentVerification = async (req, res) => {
     });
 
     res.redirect(
-      BASE_URL +'/paymentsuccess?reference=${razorpay_payment_id}'
+      `${BASE_URL}/paymentsuccess?reference=${razorpay_payment_id}`
     );
   } else {
     res.status(400).json({
@@ -113,20 +121,6 @@ const clientsecret =process.env.CLIENT_SECRET;
 const resetTokens = {};
 const verifyTokens = {};
 
-app.use(session({
-  secret:process.env.SECRET ,
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-  secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
-  httpOnly: true,
-  sameSite: 'lax',
-     maxAge: 1000 * 60 * 60 * 24, // 1 day
-}
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 passport.use(new OAuth2Strategy({
   clientID: clientid,
@@ -194,7 +188,7 @@ app.post('/register', async (req, res) => {
     verifyTokens[email] = { token: verifyToken, expiry: Date.now() + 15 * 60 * 1000 }; // Token expires in 15 minutes
 
     // Create the verification URL
-    const verifyUrl = BASE_URL + '/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}';
+    const verifyUrl = `${BASE_URL}/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}`;
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
     const reply_to = email;
@@ -257,7 +251,7 @@ app.post('/forgotpassword', async (req, res) => {
   const resetToken = crypto.randomBytes(32).toString('hex');
   resetTokens[email] = { token: resetToken, expiry: Date.now() + 15 * 60 * 1000 }; // Token expires in 15 minutes
 
-  const resetUrl =BASE_URL + '/resetpassword?token=${resetToken}&email=${encodeURIComponent(email)}';
+  const resetUrl =`${BASE_URL}/resetpassword?token=${resetToken}&email=${encodeURIComponent(email)}`;
   try {
     const send_to = email;
     const sent_from = process.env.EMAIL_USER;
@@ -478,6 +472,7 @@ app.post('/cart/pay', async (req, res) => {
 
 
 app.get('/login/success', (req, res) => {
+  console.log(req.session)
   if (req.isAuthenticated()) {
     res.status(200).json({ success: true, user: req.user });
   } else {
