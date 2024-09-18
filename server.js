@@ -118,8 +118,11 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
-  }
+  secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
+  httpOnly: true,
+  sameSite: 'lax',
+     maxAge: 1000 * 60 * 60 * 24, // 1 day
+}
 }));
 
 app.use(passport.initialize());
