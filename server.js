@@ -473,6 +473,9 @@ app.post('/cart/pay', async (req, res) => {
 
 app.get('/login/success', (req, res) => {
   console.log(req.session)
+  console.log(req.user)
+  console.log(req.isAuthenticated)
+  console.log(req)
   if (req.isAuthenticated()) {
     res.status(200).json({ success: true, user: req.user });
   } else {
