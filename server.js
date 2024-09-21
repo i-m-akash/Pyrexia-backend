@@ -170,7 +170,7 @@ app.get("/auth/google/callback", passport.authenticate("google", {
 
 app.get('/',(req,res)=>{
 
-  res.send(process.env.EMAIL_PASS,process.env.EMAIL_HOST);
+  res.send(process.env.EMAIL_PASS);
   
   
 });
