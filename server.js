@@ -826,7 +826,183 @@ app.post('/resetpassword', async (req, res) => {
 
   res.status(200).json({ message: "Password reset successful" });
 });
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
+    // Check if both email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    // Check if the user is verified
+    if (!user.verifiedUser) {
+      const verifyToken = crypto.randomBytes(32).toString('hex');
+      verifyTokens[email] = { token: verifyToken, expiry: Date.now() + 15 * 60 * 1000 };
+
+      const verifyUrl = `${BASE_URL}/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}`;
+      const send_to = email;
+      const sent_from = process.env.EMAIL_USER;
+      const reply_to = email;
+      const subject = "Verification Email";
+      const message = `
+        You are trying to create an account. Please click the link to verify your email: ${verifyUrl}
+        If somebody else is trying to use your email, they cannot perform any action without verifying the email.
+      `;
+
+      // Send the verification email
+      try {
+        await sendEmail(subject, message, send_to, sent_from, reply_to);
+        return res.status(200).json({ success: false, message: "Please verify your email to login. A verification link has been sent to your email." });
+      } catch (error) {
+        console.error("Error sending verification email:", error);
+        return res.status(500).json({ error: "Failed to send verification email. Please try again later." });
+      }
+    }
+
+    // Compare provided password with the hashed password in the database
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    // Handle session login if using sessions (e.g., Passport.js)
+    req.login(user, err => {
+      if (err) {
+        console.error("Login error:", err);
+        return res.status(500).json({ error: "Login failed" });
+      }
+      req.session.user = user; // Store user in session
+      
+      res.status(200).json({ success: true, message: "User logged in successfully" });
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Authentication middleware
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+};
+
+app.get('/user', isAuthenticated, (req, res) => {
+  res.status(200).json({ user: req.user });
+});
+
+app.post('/registerevent', async (req, res) => {
+  const { eventName, teamLeaderName, teamLeaderMobileNo, teamLeaderEmail, teamLeaderCollege, teamSize, teamLeaderGender, fees } = req.body;
+
+  if (!eventName || !teamLeaderName || !teamLeaderMobileNo || !teamLeaderEmail || !teamLeaderCollege || !fees || teamSize === undefined) {
+    return res.status(400).json({ error: 'All required fields must be provided.' });
+  }
+
+  try {
+    const existingRegistration = await EventRegistration.findOne({ teamLeaderEmail, eventName });
+
+    if (existingRegistration) {
+      return res.status(400).json({ error: 'A registration with this email already exists for this event.' });
+    }
+
+    const registration = new EventRegistration({
+      eventName,
+      teamLeaderName,
+      teamLeaderMobileNo,
+      teamLeaderEmail,
+      teamLeaderCollege,
+      teamSize,
+      teamLeaderGender,
+      fees
+    });
+    await registration.save();
+    res.status(200).json({ success: true, message: 'Successfully added to Cart! Pay to complete registration process' });
+  } catch (error) {
+    console.error('Database save error:', error);
+    res.status(500).json({ error: 'Error in adding event to cart. Please try again later.' });
+  }
+});
+
+// Example backend route to handle item removal
+app.post('/cart/remove', async (req, res) => {
+  const { eventName, userEmail } = req.body;
+
+  try {
+    const result = await EventRegistration.deleteMany({ teamLeaderEmail: userEmail, eventName });
+
+    if (result.deletedCount > 0) {
+      res.json({ success: true, message: 'Item(s) removed successfully' });
+    } else {
+      res.status(404).json({ message: 'Item not found' });
+    }
+  } catch (error) {
+    console.error('Failed to remove item:', error);
+    res.status(500).json({ message: 'Failed to remove item' });
+  }
+});
+
+// Fetch all cart items for a user based on email
+app.get('/cart', async (req, res) => {
+  const userEmail = req.query.email;
+
+  try {
+    const cartItems = await EventRegistration.find({ teamLeaderEmail: userEmail, Paid: false });
+    res.status(200).json(cartItems);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching cart items", details: error });
+  }
+});
+
+app.post('/cart/pay', async (req, res) => {
+  const { registrationId } = req.body;
+
+  try {
+    const registration = await EventRegistration.findById(registrationId);
+
+    if (!registration) {
+      return res.status(404).json({ error: 'Registration not found' });
+    }
+
+    registration.Paid = true;
+    await registration.save();
+
+    res.status(200).json({ message: "Payment successful, registration confirmed." });
+  } catch (error) {
+    res.status(500).json({ error: "Error processing payment", details: error });
+  }
+});
+
+app.get('/login/success', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({ success: true, user: req.user });
+  } else {
+    res.status(401).json({ success: false });
+  }
+});
+
+app.get("/logout", (req, res, next) => {
+  req.logout(function (err) {
+    if (err) { return next(err); }
+    req.session.destroy((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.clearCookie('connect.sid', { path: '/' });
+      res.status(200).json({ success: true, message: "User logged out" });
+    });
+  });
+});
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
