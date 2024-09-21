@@ -11,7 +11,7 @@ const OAuth2Strategy = require("passport-google-oauth2").Strategy;
 const express = require( "express");
 const Razorpay = require("razorpay");
 require("./db/conn"); 
-
+const MongoStore = require('connect-mongo');
 const BASE_URL=process.env.BASE_URL
 const app = express();
 
@@ -24,9 +24,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret:"123yhjksd8902-1x",
+  secret:process.env.SECRET,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
+  store: MongoStore.create({ mongoUrl:process.env.DATABASE, collectionName: "sessions" }),
   cookie: {
   // secure: process.env.NODE_ENV === 'production',
   // // httpOnly: true,
