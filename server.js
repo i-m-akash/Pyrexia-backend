@@ -141,7 +141,7 @@ passport.use(new OAuth2Strategy({
 }));
 
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user.email);
  });
 
 // passport.deserializeUser((user, done) => {
@@ -149,9 +149,9 @@ passport.serializeUser((user, done) => {
 // });
 
 
-passport.deserializeUser((id, done) => {
+passport.deserializeUser((email, done) => {
   // Find the user by ID in the database
-  User.findById(id, (err, user) => {
+  User.findById(email, (err, user) => {
     done(err, user);
   });
 });
