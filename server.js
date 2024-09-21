@@ -563,7 +563,7 @@ const cors = require("cors");
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
-const crypto = require("crypto");
+
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const User = require("./model/userSchema");
