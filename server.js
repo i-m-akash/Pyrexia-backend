@@ -577,7 +577,7 @@ const MongoStore = require('connect-mongo');
 app.use(cors({
   origin: BASE_URL,
   methods: "GET,POST,PUT,DELETE",
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 
