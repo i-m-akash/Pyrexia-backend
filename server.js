@@ -26,11 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret:process.env.SECRET ,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
-  secure: process.env.NODE_ENV === 'production', // Only send cookies over HTTPS in production
-  httpOnly: true,
-  sameSite: 'lax',
+  // secure: process.env.NODE_ENV === 'production',
+  // // httpOnly: true,
+  // sameSite: 'lax',
      maxAge: 1000 * 60 * 60 * 24, // 1 day
 }
 }));
