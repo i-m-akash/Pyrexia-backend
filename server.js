@@ -5,7 +5,7 @@ const passport = require("passport");
 const bcrypt = require( "bcryptjs");
 const User = require("./model/userSchema");
 const EventRegistration = require( "./model/registrationSchema");
-const sendEmail = require("./utils/sendEmail"); 
+// const sendEmail = require("./utils/sendEmail"); 
 const crypto = require( 'crypto');
 const OAuth2Strategy = require("passport-google-oauth2").Strategy; 
 const express = require( "express");
@@ -172,6 +172,39 @@ app.get('/',(req,res)=>{
   res.send(BASE_URL);
   
 });
+const nodemailer =require("nodemailer");
+
+const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: 587,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const options = {
+    from: sent_from,
+    to: send_to,
+    replyTo: reply_to,
+    subject: subject,
+    html: message,
+  };
+
+  // Send Email
+  transporter.sendMail(options, function (err, info) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(info);
+    }
+  });
+};
+
 
 app.post('/register', async (req, res) => {
   try {
