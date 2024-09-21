@@ -593,9 +593,9 @@ app.use(session({
     collectionName: 'sessions',
   }),
   cookie: {
-    // secure: process.env.NODE_ENV === 'production',
-    // httpOnly: true,
-    // sameSite: 'lax',
+    httpOnly: true,
+    secure: true, // Set this to true if you're using HTTPS
+    sameSite: 'none',
     maxAge: 1000 * 60 * 60 * 24, // 1 day
   }
 }));
