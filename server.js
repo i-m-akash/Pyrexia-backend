@@ -233,7 +233,9 @@ app.post('/register', async (req, res) => {
     // Generate a verification token
     const verifyToken = crypto.randomBytes(32).toString('hex');
     verifyTokens[email] = { token: verifyToken, expiry: Date.now() + 15 * 60 * 1000 }; // Token expires in 15 minutes
-
+console.log(verifyToken);
+    console.log(verifyToken[email);
+    
     // Create the verification URL
     const verifyUrl = `${BASE_URL}/emailverification?token=${verifyToken}&email=${encodeURIComponent(email)}`;
     const send_to = email;
@@ -244,7 +246,7 @@ app.post('/register', async (req, res) => {
           You are trying to create an account. Please click the link to verify your email: ${verifyUrl}
           If somebody else is trying to use your email, they cannot perform any action without verifying the email.
       `;
-
+console.log(verifyUrl);
     // Send the verification email
     try {
       await sendEmail(subject, message, send_to, sent_from, reply_to);
