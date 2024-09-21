@@ -577,7 +577,7 @@ const MongoStore = require('connect-mongo');
 app.use(cors({
   origin: BASE_URL,
   methods: "GET,POST,PUT,DELETE",
-  // allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 
@@ -593,9 +593,9 @@ app.use(session({
     collectionName: 'sessions',
   }),
   cookie: {
-    httpOnly: true,
-    secure: true, // Set this to true if you're using HTTPS
-    sameSite: 'none',
+    // httpOnly: true,
+    // secure: true, // Set this to true if you're using HTTPS
+    // sameSite: 'none',
     maxAge: 1000 * 60 * 60 * 24, // 1 day
   }
 }));
