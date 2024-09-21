@@ -11,7 +11,6 @@ const OAuth2Strategy = require("passport-google-oauth2").Strategy;
 const express = require( "express");
 const Razorpay = require("razorpay");
 require("./db/conn"); 
-const MongoStore = require('connect-mongo');
 const BASE_URL=process.env.BASE_URL
 const app = express();
 
@@ -142,11 +141,13 @@ passport.use(new OAuth2Strategy({
 }));
 
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user.id);
  });
 
-passport.deserializeUser((user, done) => {
-  done(null, user);
+passport.deserializeUser(function(id, done) => {
+     User.findById(id, function(err, user) => {
+     })
+  done(err, user);
 });
 
 
