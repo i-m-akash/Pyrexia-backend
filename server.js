@@ -24,7 +24,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret:process.env.SECRET ,
+  secret:"123yhjksd8902-1x",
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -141,20 +141,20 @@ passport.use(new OAuth2Strategy({
 }));
 
 passport.serializeUser((user, done) => {
-  done(null, user.email);
+  done(null, user);
  });
 
-// passport.deserializeUser((user, done) => {
-//   done(null, user);
-// });
-
-
-passport.deserializeUser((email, done) => {
-  // Find the user by ID in the database
-  User.findById(email, (err, user) => {
-    done(err, user);
-  });
+passport.deserializeUser((user, done) => {
+  done(null, user);
 });
+
+
+// passport.deserializeUser((email, done) => {
+//   // Find the user by ID in the database
+//   User.findById(email, (err, user) => {
+//     done(err, user);
+//   });
+// });
 
 
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
