@@ -899,7 +899,7 @@ const isAuthenticated = (req, res, next) => {
 };
 
 app.get('/user', isAuthenticated, (req, res) => {
-  res.status(200).json({ user: req.user });
+  res.status(200).json({ success:true , user: req.user });
 });
 
 app.post('/registerevent', async (req, res) => {
