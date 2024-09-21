@@ -169,7 +169,9 @@ app.get("/auth/google/callback", passport.authenticate("google", {
 }));
 
 app.get('/',(req,res)=>{
-  res.send(BASE_URL);
+
+  res.send(process.env.EMAIL_USER);
+  
   
 });
 const nodemailer =require("nodemailer");
@@ -196,13 +198,13 @@ const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
   };
 
   // Send Email
-  transporter.sendMail(options, function (err, info) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(info);
-    }
-  });
+ try {
+    let info = await transporter.sendMail(options);
+    console.log('Email sent:', info.response);
+  } catch (error) {
+    console.log('Error sending email:', error);
+  }
+
 };
 
 
