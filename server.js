@@ -7,7 +7,7 @@ const User = require("./model/userSchema");
 const EventRegistration = require( "./model/registrationSchema");
 // const sendEmail = require("./utils/sendEmail"); 
 const crypto = require( 'crypto');
-const OAuth2Strategy = require("passport-google-oauth2").Strategy; 
+const OAuth2Strategy = require("passport-google-oauth20"); 
 const express = require( "express");
 const Razorpay = require("razorpay");
 require("./db/conn"); 
