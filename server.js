@@ -137,7 +137,7 @@ passport.use(new OAuth2Strategy({
     if (!user) {
       return done(null, false, { message: "User not found" });
     }
-    await User.updateOne({ email:profile.email }, { verifiedUser: true });
+    user = await User.updateOne({ email:profile.emails[0]?.value }, { verifiedUser: true }, { updated: true });
     return done(null, user);
   } catch (error) {
     return done(error, null);
@@ -164,9 +164,12 @@ passport.deserializeUser((user, done) => {
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 app.get("/auth/google/callback", passport.authenticate("google", {
-  successRedirect: BASE_URL + '/',
+  // successRedirect: BASE_URL + '/',
   failureRedirect: BASE_URL + '/notfound'
-}));
+}), (req, res)=>{
+  console.log(req.user);
+  res.redirect(`${BASE_URL}/`);
+});
 
 app.get('/',(req,res)=>{
 
