@@ -129,7 +129,7 @@ const verifyTokens = {};
 passport.use(new OAuth2Strategy({
   clientID: clientid,
   clientSecret: clientsecret,
-  callbackURL: "/auth/google/callback",
+  callbackURL: "https://pyrexia-backend.onrender.com/auth/google/callback",
   scope: ["profile", "email"]
 }, async (accessToken, refreshToken, profile, done) => {
   try {
